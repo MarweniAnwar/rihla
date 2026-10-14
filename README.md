@@ -24,3 +24,6 @@ Q3:right: 130 positionne le texte à 130 pixels du bord
 éviter de chevaucher un élément situé à droite.
  La valeur dépend de la taille du Stack et du design souhaité.
  ## palier 4:
+ Q1:e Spacer() prend l'espace libre dans la Row entre la note et le prix. L'Expanded autour de la Column lui permet de disposer d'une largeur limitée et de partager correctement cet espace.
+ Q2:
+ il faut ajouter une ligne dans le fichier qui contient la liste des destinations, probablement lib/data/destinations.dart ou le fichier où la liste est déclarée.
