@@ -23,4 +23,4 @@ Q3:right: 130 positionne le texte à 130 pixels du bord
  à l'endroit souhaité sur la bannière, par exemple pour
 éviter de chevaucher un élément situé à droite.
  La valeur dépend de la taille du Stack et du design souhaité.
- 
+ ## palier 4:
