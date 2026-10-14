@@ -64,8 +64,10 @@ const List<Destination> destinations = [
     description:
         'Balade à dos de dromadaire, nuit sous tente et dunes à perte de vue : '
         "l'expérience saharienne par excellence.",
+   
   ),
   Destination(
+    
     nom: 'Hammamet',
     region: 'Nabeul',
     categorie: 'Plage',
