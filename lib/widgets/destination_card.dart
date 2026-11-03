@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import '../models/destination.dart';
-import 'FavoriteButton.dart';
+import 'favorite_button.dart';
 
 class DestinationCard extends StatelessWidget {
   final Destination destination;

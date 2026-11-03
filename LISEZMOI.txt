@@ -1,0 +1,7 @@
+Kit TP4 — Rihla (Atelier Cross-Platform, séance 4)
+
+lib/models/reservation.dart     À copier dans votre projet (palier 1).
+lib/models/destination.dart     Identique au TP3 (au cas où).
+lib/screens/detail_screen.dart  Écran de détail du devoir S3.
+                                À utiliser SEULEMENT si votre devoir n'est pas terminé.
+assets/images/                  Les 6 illustrations du TP3 (au cas où).
