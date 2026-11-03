@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/destination.dart';
+import '../screens/detail_screen.dart';
  
 class HeroBanner extends StatelessWidget {
   final Destination destination;
@@ -84,7 +85,11 @@ class HeroBanner extends StatelessWidget {
               bottom: 20,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO : action du bouton "Découvrir"
+
+                  
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DetailScreen(destination: destination,
+                  ),
+                  ),);// TODO : action du bouton "Découvrir"
                 },
                
                 child: const Text('Découvrir'),
