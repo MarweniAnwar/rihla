@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' show Border, BorderRadius, BoxDecoration, BoxFit, BoxShape, BuildContext, Colors, Column, Container, CrossAxisAlignment, EdgeInsets, Expanded, FilledButton, FontWeight, Icon, IconButton, IconData, Icons, Image, ListView, MainAxisSize, Padding, Positioned, Row, SafeArea, Scaffold, Size, SizedBox, Stack, StackFit, State, StatefulWidget, StatelessWidget, Text, TextAlign, TextStyle, Theme, Widget;
 
+import 'package:flutter/material.dart';
 import '../models/destination.dart';
 import '../widgets/favorite_button.dart';
 
@@ -39,9 +39,11 @@ class _DetailScreenState extends State<DetailScreen> {
                   child: _BoutonRond(
                     child: IconButton(
                       tooltip: 'Retour',
-                      onPressed: () {}, // TP4 palier 2
-                      icon: const Icon(Icons.arrow_back),
-                    ),
+                    onPressed: () => Navigator.pop(context),
+                    /* TODO 2 : revenir à l'écran précédent */
+  icon: const Icon(Icons.arrow_back),
+),
+
                   ),
                 ),
                 const Positioned(

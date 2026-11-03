@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:rihla/screens/detail_screen.dart';
 import '../models/destination.dart';
 import 'favorite_button.dart';
 
@@ -17,7 +18,20 @@ class DestinationCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
 
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-
+      clipBehavior: Clip.antiAlias, // l'effet d'encre suit les coins arrondis
+  child: InkWell(
+    onTap: () {
+      
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailScreen(destination: destination),
+        ),
+      );
+      //TODO 1 : Navigator.push vers DetailScreen,
+      //    
+    },
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Row(
@@ -99,7 +113,7 @@ class DestinationCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
