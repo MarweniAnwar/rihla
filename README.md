@@ -40,3 +40,16 @@ que l'affichage correspond toujours à la catégorie sélectionnée
 Q3:Parce que HeroBanner n'a pas besoin de gérer d'état interne mutable (il ne change pas de lui-même). 
 Il reçoit simplement une destination en paramètre d'entrée (propriété) de la part de l'écran parent 
 (HomeScreen), qui lui est un StatefulWidget et gère les rafraîchissements globaux.
+## tp4 palier 2:
+Q1:Oui, le filtre est conservé. Avec la gestion de la navigation par pile (Navigator), l'écran d'accueil (HomeScreen) est placé sous l'écran de détail lors du push et reste conservé en mémoire (en pause). Lorsqu'on revient en arrière avec pop, l'écran supérieur est retiré de la pile et l'on retrouve l'écran d'accueil dans son état exact (le filtre appliqué n'est pas perdu).
+Q2:DetailScreen connaît la destination grâce au passage de l'objet par son constructeur (DetailScreen(destination: destination)). Le mécanisme réutilisé du TP 3 est la transmission de paramètres d'un widget parent vers un widget enfant via le constructeur.
+Q3:Si l'on retire clipBehavior (comme Clip.antiAlias), l'effet d'encre (ripple effect) de l'animation tactile (InkWell) ne respecte plus les coins arrondis de la carte : l'effet visuel déborde et dépasse carrément des angles arrondis.
+## palier 3:
+Q1:Action : Elle parcourt tous les champs du formulaire (TextFormField) associés à cette clé et exécute la fonction de validation (validator) définie pour chacun d'eux.
+
+=>Valeur de retour : Elle renvoie un booléen (bool) :*true si tous les champs respectent leurs règles et que leurs validateurs renvoient null.
+*false dès qu'au moins un champ échoue à sa validation (le validateur renvoie alors une chaîne de caractères contenant le message d'erreur).
+Q2:inputFormatters (Filtrage en amont / Pendant la frappe) : Intervient en temps réel lorsque l'utilisateur tape sur son clavier. Il empêche physiquement la saisie de caractères interdits (par exemple, bloquer les lettres avec FilteringTextInputFormatter.digitsOnly ou limiter la longueur avec LengthLimitingTextInputFormatter(8)).
+
+validator (Validation en aval / À la soumission) : Intervient au moment où l'on clique sur le bouton de confirmation (via validate()). Il vérifie si la valeur finale enregistrée respecte les critères requis (par exemple, s'assurer que le champ n'est pas vide ou qu'il comporte bien le bon nombre de chiffres) et affiche un message d'erreur sous le champ si nécessaire.
+Q3:Les contrôleurs de texte (TextEditingController) réservent des ressources et des écouteurs en mémoire pour suivre les modifications de texte en direct. Appeler dispose() dans la méthode du même nom permet de libérer proprement ces ressources dès que le widget est détruit (lors de la fermeture de l'écran), évitant ainsi les fuites de mémoire (memory leaks).
