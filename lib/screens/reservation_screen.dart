@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // pour inputFormatters
  
 import '../models/destination.dart';
-//import '../models/reservation.dart';
+import '../models/reservation.dart'; 
 
- 
 class ReservationScreen extends StatefulWidget {
   final Destination destination;
   final int voyageurs;
@@ -24,18 +23,17 @@ class _ReservationScreenState extends State<ReservationScreen> {
   final _emailCtrl = TextEditingController();
   final _telCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
-DateTime? _date;               // null tant qu'aucune date n'est choisie
-String _formule = 'Essentiel';
-bool _conditions = false;
-AutovalidateMode _autoValidation = AutovalidateMode.disabled;
+  DateTime? _date;              // null tant qu'aucune date n'est choisie
+  String _formule = 'Essentiel';
+  bool _conditions = false;
+  AutovalidateMode _autoValidation = AutovalidateMode.disabled;
  
-int get _prixParPersonne => _formule == 'Confort'
-    ? (widget.destination.prix * 1.3).round()
-    : widget.destination.prix;
+  int get _prixParPersonne => _formule == 'Confort'
+      ? (widget.destination.prix * 1.3).round()
+      : widget.destination.prix;
  
-int get _total => _prixParPersonne * widget.voyageurs;
+  int get _total => _prixParPersonne * widget.voyageurs;
 
- 
   @override
   void dispose() {
     _nomCtrl.dispose();
@@ -43,31 +41,26 @@ int get _total => _prixParPersonne * widget.voyageurs;
     _telCtrl.dispose();
     _dateCtrl.dispose();
     super.dispose();
-    // TODO 1 : libérer les trois contrôleurs, puis super.dispose()
   }
-  Future<void> _choisirDate() async {
-  final demain = DateTime.now().add(const Duration(days: 1));
-  final choisie = await showDatePicker(
-    context: context,
-    initialDate: _date ?? demain,
-    firstDate: demain,
-    lastDate: DateTime.now().add(const Duration(days: 365)),
-    helpText: 'Date de départ',
-  );
-  
-  if (choisie == null) return; // L'utilisateur a annulé
-  // TODO 1 : si l'utilisateur annule (null), ne rien faire
-  
-  setState(() {
-    _date = choisie;
-    _dateCtrl.text = '${choisie.day.toString().padLeft(2, '0')}/${choisie.month.toString().padLeft(2, '0')}/${choisie.year}';
-  });
-  // TODO 2 : avec setState, mémoriser la date dans _date et écrire
-  //          'jj/mm/aaaa' dans _dateCtrl.text (padLeft(2, '0'))
-}
- 
 
- 
+  Future<void> _choisirDate() async {
+    final demain = DateTime.now().add(const Duration(days: 1));
+    final choisie = await showDatePicker(
+      context: context,
+      initialDate: _date ?? demain,
+      firstDate: demain,
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      helpText: 'Date de départ',
+    );
+    
+    if (choisie == null) return; // L'utilisateur a annulé
+    
+    setState(() {
+      _date = choisie;
+      _dateCtrl.text = '${choisie.day.toString().padLeft(2, '0')}/${choisie.month.toString().padLeft(2, '0')}/${choisie.year}';
+    });
+  }
+
   InputDecoration _deco(String label, IconData icone, {String? aide}) {
     return InputDecoration(
       labelText: label,
@@ -89,27 +82,33 @@ int get _total => _prixParPersonne * widget.voyageurs;
  
   String? _validerEmail(String? v) {
     if (v == null || v.trim().isEmpty) return 'Indiquez votre e-mail';
-    final ok =RegExp(r'^[\w.+-]+@[\w-]+\.[\w.]+$').hasMatch(v.trim());
+    final ok = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.]+$').hasMatch(v.trim());
     return ok ? null : 'E-mail invalide (ex. : nom@mail.tn)';
-    // TODO 2 : vide -> "Indiquez votre e-mail"
-    //          ne respecte pas RegExp(r'^[\w.+-]+@[\w-]+\.[\w.]+$')
-    //          -> 'E-mail invalide (ex. : nom@mail.tn)'
   }
  
   String? _validerTel(String? v) {
     if (v == null || v.trim().isEmpty) return 'Indiquez votre téléphone';
     if (v.trim().length != 8) return '8 chiffres attendus';
     return null;
-    // TODO 3 : vide -> 'Indiquez votre téléphone'
-    //          longueur différente de 8 -> '8 chiffres attendus'
   }
  
   void _valider() {
-    if (!_formKey.currentState!.validate()) return;
-    // Provisoire : sera remplacé au palier 5
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Formulaire valide')),
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _autoValidation = AutovalidateMode.onUserInteraction);
+      return;
+    }
+    
+    final reservation = Reservation(
+      destination: widget.destination,
+      nom: _nomCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      telephone: _telCtrl.text.trim(),
+      dateDepart: _date!,
+      voyageurs: widget.voyageurs,
+      formule: _formule,
     );
+
+    Navigator.pop(context, reservation);
   }
  
   @override
@@ -125,46 +124,44 @@ int get _total => _prixParPersonne * widget.voyageurs;
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-  padding: const EdgeInsets.all(12),
-  decoration: BoxDecoration(
-    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-    borderRadius: BorderRadius.circular(16),
-  ),
-  child: Row(
-    children: [
-      ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          widget.destination.image,
-          width: 64,
-          height: 64,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 64),
-        ),
-      ),
-      const SizedBox(width: 16),
-      Flexible(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.destination.nom,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        widget.destination.image,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 64),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.destination.nom,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text('Durée : ${widget.destination.duree}'),
+                          Text('Voyageurs : ${widget.voyageurs}'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text('Durée : ${widget.destination.duree}'),
-            Text('Voyageurs : ${widget.voyageurs}'),
-          ],
-        ),
-      ),
-    ],
-  ),
-),
-              // TODO 4 : récapitulatif (image 64 x 64, nom, durée, voyageurs)
-              
               const SizedBox(height: 24),
               TextFormField(
                 controller: _dateCtrl,
@@ -173,7 +170,7 @@ int get _total => _prixParPersonne * widget.voyageurs;
                 decoration: _deco('Date de départ', Icons.calendar_month_outlined),
                 validator: (_) => _date == null ? 'Choisissez une date' : null,
               ),
-              
+              const SizedBox(height: 16),
               SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(value: 'Essentiel', label: Text('Essentiel'),
@@ -181,16 +178,14 @@ int get _total => _prixParPersonne * widget.voyageurs;
                   ButtonSegment(value: 'Confort', label: Text('Confort +30 %'),
                       icon: Icon(Icons.hotel_outlined)),
                 ],
-                selected: {_formule},          // un Set : ici un seul élément
+                selected: {_formule},          
                 onSelectionChanged: (choix) {
-                  
                   setState(() {
                     _formule = choix.first;
                   });
                 },
               ),
               const SizedBox(height: 16),
-
               CheckboxListTile(
                 value: _conditions,
                 onChanged: (v) => setState(() => _conditions = v ?? false),
@@ -200,7 +195,6 @@ int get _total => _prixParPersonne * widget.voyageurs;
                 subtitle: const Text("Annulation gratuite jusqu'à 48 h avant"),
               ),
               const SizedBox(height: 24),
-              
               TextFormField(
                 controller: _nomCtrl,
                 decoration: _deco('Nom complet', Icons.person_outline),
@@ -209,7 +203,6 @@ int get _total => _prixParPersonne * widget.voyageurs;
                 validator: _validerNom,
               ),
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _emailCtrl,
                 decoration: _deco('E-mail', Icons.mail_outline),
@@ -218,7 +211,6 @@ int get _total => _prixParPersonne * widget.voyageurs;
                 validator: _validerEmail,
               ),
               const SizedBox(height: 16),
-              // TODO 5 : champ E-mail (clavier emailAddress)
               TextFormField(
                 controller: _telCtrl,
                 decoration: _deco('Téléphone', Icons.phone_outlined, aide: '8 chiffres, sans indicatif'),
@@ -230,73 +222,69 @@ int get _total => _prixParPersonne * widget.voyageurs;
                 ],
                 validator: _validerTel,
               ),
-              // TODO 6 : champ Téléphone (clavier phone, chiffres seulement,
-              //          8 maximum, texte d'aide '8 chiffres, sans indicatif')
             ],
           ),
         ),
       ),
-
-      
-      // TODO 7 : bottomNavigationBar avec un FilledButton.icon « Confirmer »
-      //          qui appelle _valider (inspirez-vous de la barre du détail)
       bottomNavigationBar: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('$_prixParPersonne DT × ${widget.voyageurs} voyageurs'),
-              Text(
-                'Total : $_total DT',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$_prixParPersonne DT × ${widget.voyageurs} voyageurs'),
+                Text(
+                  'Total : $_total DT',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          FilledButton(
-            // Le bouton est grisé et désactivé (onPressed: null) si les conditions ne sont pas cochées
-            onPressed: !_conditions
-                ? null
-                : () {
-                    setState(() {
-                      _autoValidation = AutovalidateMode.onUserInteraction;
-                    });
-                    _valider();
-                  },
-            child: const Text('Confirmer'),
-          ),
-        ],
+              ],
+            ),
+            const Spacer(),
+            FilledButton(
+              onPressed: !_conditions
+                  ? null
+                  : () {
+                      setState(() {
+                        _autoValidation = AutovalidateMode.onUserInteraction;
+                      });
+                      _valider();
+                    },
+              child: const Text('Confirmer'),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-  }}
+    );
+  }
+}
+/*
+Q1. Que vaut reservation si l'utilisateur quitte le formulaire avec la flèche retour ?
+- L'objet reservation vaut `null`. En effet, lorsque l'utilisateur quitte l'écran de formulaire 
+  en appuyant sur la flèche retour (sans valider), aucun objet n'est passé en paramètre de 
+  la méthode `Navigator.pop(context)`, ce qui renvoie `null` à l'appel `await Navigator.push`.
 
-  //Q1. Pourquoi le champ date est-il en readOnly ? Que se passerait-il sinon ?
- // R1. Le champ est en readOnly pour empêcher l'ouverture du clavier virtuel de l'appareil. 
-   //   Sinon, l'utilisateur pourrait essayer de saisir la date manuellement au clavier, 
-     // ce qui compliquerait grandement le formatage et contournerait le sélecteur de 
-      //date sécurisé (showDatePicker).
+Q2. Retirez le test mounted : quel avertissement affiche VS Code ? Que signifie-t-il ?
+- VS Code affiche l'avertissement : "Don't use 'BuildContext's across async gaps" (use_build_context_synchronously).
+  Cela signifie qu'on essaie d'utiliser le `BuildContext` (avec `showDialog` ou `Navigator`) après un délai 
+  asynchrone (`await`), ce qui est risqué si l'écran a été détruit ou fermé entre-temps.
 
-  //Q2. _total est un getter. Pourquoi n'a-t-on pas besoin de le mettre à jour 
-    //  nous-mêmes quand la formule change ?
-  //R2. Un getter (int get _total) est recalculé dynamiquement et automatiquement à 
-     // chaque fois qu'il est lu (notamment lors d'un appel à setState qui reconstruit 
-      //l'arbre des widgets). Comme il dépend directement de _prixParPersonne (qui 
-      //lui-même dépend de _formule), il se met à jour instantanément dès que la 
-      //formule change.
+Q3. Le bouton « Parfait » ferme la boîte de dialogue avec Navigator.pop. Qu'est-ce que cela vous apprend sur les boîtes de dialogue ?
+- Cela apprend qu'une boîte de dialogue (`showDialog`) est gérée par Flutter comme une route ou un écran 
+  superposé au-dessus de l'écran actuel (dans la pile de navigation), et qu'il faut utiliser `Navigator.pop(context)` 
+  pour la dépiler et la refermer.
+*/

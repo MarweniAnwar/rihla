@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import '../models/destination.dart';
 import '../widgets/favorite_button.dart';
 import 'reservation_screen.dart';
+import '../models/reservation.dart';
 /// Devoir TP3 — Écran de détail d'une destination (version du kit TP4).
 /// À relier aux cartes au palier 2 du TP4.
 class DetailScreen extends StatefulWidget {
@@ -16,6 +16,40 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   int _voyageurs = 1;
+  Future<void> _reserver() async {
+    final reservation = await Navigator.push<Reservation>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReservationScreen(
+          destination: widget.destination,
+          voyageurs: _voyageurs,
+        ),
+      ),
+    );
+
+    if (reservation == null) return;
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
+        title: const Text('Réservation confirmée'),
+        content: Text(
+          '${reservation.nom}, votre séjour à ${reservation.destination.nom} est '
+          'réservé pour ${reservation.voyageurs} voyageur(s), formule ${reservation.formule}.\n\n'
+          'Total : ${reservation.total} DT\n'
+          'Un e-mail de confirmation sera envoyé à ${reservation.email}.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Parfait'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +73,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   child: _BoutonRond(
                     child: IconButton(
                       tooltip: 'Retour',
-                    onPressed: () => Navigator.pop(context),
-                    /* TODO 2 : revenir à l'écran précédent */
-  icon: const Icon(Icons.arrow_back),
-),
-
+                      onPressed: () => Navigator.pop(context),
+                      /* TODO 2 : revenir à l'écran précédent */
+                      icon: const Icon(Icons.arrow_back),
+                    ),
                   ),
                 ),
                 const Positioned(
@@ -190,17 +223,7 @@ class _DetailScreenState extends State<DetailScreen> {
               const SizedBox(width: 20),
               Expanded(
                 child: FilledButton(
-                  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReservationScreen(
-          destination: d,
-          voyageurs: _voyageurs,
-        ),
-      ),
-    );
-  }, // TP4 palier 3 puis 5
+                  onPressed: _reserver, // Corrigé : appel direct de la méthode _reserver
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
                   ),
