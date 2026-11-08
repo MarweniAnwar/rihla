@@ -66,7 +66,10 @@ class _DetailScreenState extends State<DetailScreen> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(d.image, fit: BoxFit.cover),
+                Hero(
+                  tag: 'image-${d.nom}',
+                  child: Image.asset(d.image, fit: BoxFit.cover),
+                ),
                 Positioned(
                   top: 48,
                   left: 16,
@@ -223,7 +226,7 @@ class _DetailScreenState extends State<DetailScreen> {
               const SizedBox(width: 20),
               Expanded(
                 child: FilledButton(
-                  onPressed: _reserver, // Corrigé : appel direct de la méthode _reserver
+                  onPressed: _reserver,
                   style: FilledButton.styleFrom(
                     minimumSize: const Size.fromHeight(56),
                   ),
