@@ -3,6 +3,9 @@ import '../models/destination.dart';
 import '../widgets/favorite_button.dart';
 import 'reservation_screen.dart';
 import '../models/reservation.dart';
+import '../models/avis.dart';
+import 'avis_screen.dart';
+
 /// Devoir TP3 — Écran de détail d'une destination (version du kit TP4).
 /// À relier aux cartes au palier 2 du TP4.
 class DetailScreen extends StatefulWidget {
@@ -16,6 +19,21 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   int _voyageurs = 1;
+
+  // Liste initiale d'avis pour le Checkpoint 1
+  final List<Avis> _avisList = [
+    const Avis(
+      auteur: 'Sarra',
+      note: 5,
+      commentaire: 'Séjour magnifique, la plage de Sidi Mahrez est superbe. Je recommande la formule Confort !',
+    ),
+    const Avis(
+      auteur: 'Karim',
+      note: 4,
+      commentaire: 'Très bonne organisation, guide sympathique. Un peu de monde en août.',
+    ),
+  ];
+
   Future<void> _reserver() async {
     final reservation = await Navigator.push<Reservation>(
       context,
@@ -48,6 +66,26 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _laisserAvis() async {
+    final avis = await Navigator.push<Avis>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AvisScreen(destination: widget.destination),
+      ),
+    );
+
+    if (avis == null) return;
+    if (!mounted) return;
+
+    setState(() {
+      _avisList.insert(0, avis);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Merci pour votre avis !')),
     );
   }
 
@@ -198,7 +236,87 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ],
                 ),
-
+                const SizedBox(height: 24),
+                // --- SECTION AVIS (Checkpoint 1) ---
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Avis (${_avisList.length})',
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    TextButton.icon(
+                      onPressed: _laisserAvis,
+                      icon: const Icon(Icons.rate_review_outlined),
+                      label: const Text('Laisser un avis'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _avisList.isEmpty
+                    ? const Text('Soyez le premier à donner votre avis.')
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _avisList.length,
+                        itemBuilder: (context, index) {
+                          final avis = _avisList[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            elevation: 0,
+                            color: cs.surfaceContainerLow,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor:
+                                            cs.primaryContainer,
+                                        child: Text(
+                                          avis.auteur[0].toUpperCase(),
+                                          style: TextStyle(
+                                            color: cs.onPrimaryContainer,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          avis.auteur,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: List.generate(
+                                          5,
+                                          (i) => Icon(
+                                            i < avis.note
+                                                ? Icons.star
+                                                : Icons.star_border,
+                                            color: Colors.amber,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(avis.commentaire),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ],
             ),
           ),
