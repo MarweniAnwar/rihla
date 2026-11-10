@@ -53,3 +53,12 @@ Q2:inputFormatters (Filtrage en amont / Pendant la frappe) : Intervient en temps
 
 validator (Validation en aval / À la soumission) : Intervient au moment où l'on clique sur le bouton de confirmation (via validate()). Il vérifie si la valeur finale enregistrée respecte les critères requis (par exemple, s'assurer que le champ n'est pas vide ou qu'il comporte bien le bon nombre de chiffres) et affiche un message d'erreur sous le champ si nécessaire.
 Q3:Les contrôleurs de texte (TextEditingController) réservent des ressources et des écouteurs en mémoire pour suivre les modifications de texte en direct. Appeler dispose() dans la méthode du même nom permet de libérer proprement ces ressources dès que le widget est détruit (lors de la fermeture de l'écran), évitant ainsi les fuites de mémoire (memory leaks).
+## tp5:palier 0 questions de compréhension
+Q1/Si la destination ayant l'identifiant 99 n'existe pas, le serveur renvoie le code 404 Not Found.
+
+Il appartient à la famille des codes 4xx, qui indiquent une erreur liée à la requête du client.
+Q2/C'est généralement le serveur qui choisit et génère l'identifiant de la réservation lors de sa création.
+Cela permet de garantir l'unicité de l'identifiant et d'éviter les conflits entre plusieurs réservations.
+Q3/
+GET : sert à récupérer des données. Les paramètres nécessaires sont généralement transmis dans l'URL. Elle n'a normalement pas besoin de corps (Body).
+POST : sert à envoyer des données au serveur pour créer une nouvelle ressource. Ces données sont généralement transmises dans le corps de la requête au format JSON
