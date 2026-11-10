@@ -18,6 +18,28 @@ class Destination {
     required this.note,
     required this.prix,
     required this.duree,
-    required this.description,
+    required this.description, required String id,
   });
+  factory Destination.fromJson(Map<String, dynamic> json) {
+    return Destination(
+      id: json['id'].toString(),
+      nom: json['nom'] as String,
+      region: json['region'] as String,
+      categorie: json['categorie'] as String,
+      image: json['image'] as String,
+      duree: json['duree'] as String,
+      description: json['description'] as String,
+      note: (json['note'] as num).toDouble(),
+      prix: json['prix'] as int,
+      // TODO 1 : region, categorie, image, duree, description (as String)
+      
+
+      // TODO 2 : note -> double. Attention : 5 arrive en int, 4.8 en double
+      
+      
+      // TODO 3 : prix -> int
+    );
+  }
 }
+
+
