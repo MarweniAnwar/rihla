@@ -5,6 +5,7 @@ import 'reservation_screen.dart';
 import '../models/reservation.dart';
 import '../models/avis.dart';
 import 'avis_screen.dart';
+import '../services/api_service.dart'; // Ajout de l'import du service API
 
 /// Devoir TP3 — Écran de détail d'une destination (version du kit TP4).
 /// À relier aux cartes au palier 2 du TP4.
@@ -48,6 +49,22 @@ class _DetailScreenState extends State<DetailScreen> {
     if (reservation == null) return;
     if (!mounted) return;
 
+    final String id;
+    try {
+      id = await ApiService.creerReservation(reservation);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Envoi impossible : json-server est-il lancé ?'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
@@ -57,7 +74,8 @@ class _DetailScreenState extends State<DetailScreen> {
           '${reservation.nom}, votre séjour à ${reservation.destination.nom} est '
           'réservé pour ${reservation.voyageurs} voyageur(s), formule ${reservation.formule}.\n\n'
           'Total : ${reservation.total} DT\n'
-          'Un e-mail de confirmation sera envoyé à ${reservation.email}.',
+          'Un e-mail de confirmation sera envoyé à ${reservation.email}.\n\n'
+          'N° de réservation :\n$id',
         ),
         actions: [
           FilledButton(
@@ -115,7 +133,6 @@ class _DetailScreenState extends State<DetailScreen> {
                     child: IconButton(
                       tooltip: 'Retour',
                       onPressed: () => Navigator.pop(context),
-                      /* TODO 2 : revenir à l'écran précédent */
                       icon: const Icon(Icons.arrow_back),
                     ),
                   ),

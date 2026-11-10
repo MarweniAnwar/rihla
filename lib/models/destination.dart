@@ -40,6 +40,8 @@ class Destination {
       // TODO 3 : prix -> int
     );
   }
+
+  String? get id => null;
 }
 
 

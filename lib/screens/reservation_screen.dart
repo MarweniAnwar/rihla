@@ -23,7 +23,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   final _emailCtrl = TextEditingController();
   final _telCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
-  DateTime? _date;              // null tant qu'aucune date n'est choisie
+  DateTime? _date;             // null tant qu'aucune date n'est choisie
   String _formule = 'Essentiel';
   bool _conditions = false;
   AutovalidateMode _autoValidation = AutovalidateMode.disabled;
@@ -106,6 +106,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       dateDepart: _date!,
       voyageurs: widget.voyageurs,
       formule: _formule,
+      total: _total,
     );
 
     Navigator.pop(context, reservation);
@@ -272,6 +273,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
     );
   }
 }
+
 /*
 Q1. Que vaut reservation si l'utilisateur quitte le formulaire avec la flèche retour ?
 - L'objet reservation vaut `null`. En effet, lorsque l'utilisateur quitte l'écran de formulaire 

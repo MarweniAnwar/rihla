@@ -62,3 +62,7 @@ Cela permet de garantir l'unicité de l'identifiant et d'éviter les conflits en
 Q3/
 GET : sert à récupérer des données. Les paramètres nécessaires sont généralement transmis dans l'URL. Elle n'a normalement pas besoin de corps (Body).
 POST : sert à envoyer des données au serveur pour créer une nouvelle ressource. Ces données sont généralement transmises dans le corps de la requête au format JSON
+## palier 4:
+1.destinationId : Pour éviter la redondance, la destination existant déjà sur le serveur.
+2.Content-Type manquant : Le serveur rejette la requête ou renvoie une erreur car il ne sait pas interpréter le format JSON.
+3.Test mounted : Pour éviter un crash si l'utilisateur a quitté l'écran pendant l'attente de la réponse réseau.
