@@ -78,28 +78,6 @@
       "formule": "Confort",
       "total": 1092,
       "id": "nMux3reV9bo"
-    },
-    {
-      "destinationId": null,
-      "nom": "anwar",
-      "email": "anwar@gmail.com",
-      "telephone": "21471516",
-      "dateDepart": "2026-11-19T00:00:00.000",
-      "voyageurs": 1,
-      "formule": "Essentiel",
-      "total": 500,
-      "id": "B95g6DiQCKE"
-    },
-    {
-      "destinationId": null,
-      "nom": "anwar",
-      "email": "marweni@gmail.com",
-      "telephone": "21471516",
-      "dateDepart": "2026-11-12T00:00:00.000",
-      "voyageurs": 1,
-      "formule": "Essentiel",
-      "total": 500,
-      "id": "zjnbs-tGW8w"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

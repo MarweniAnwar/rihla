@@ -7,6 +7,7 @@ import '../widgets/hero_banner.dart';
 import '../widgets/section_title.dart';
 import '../widgets/destination_card.dart'; 
 import '../services/api_service.dart';
+import 'mes_reservations_screen.dart'; // Import de l'onglet Voyages
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,75 +45,94 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // --- Gestion des écrans selon l'onglet sélectionné ---
+  Widget _afficherOnglet() {
+    switch (_onglet) {
+      case 0:
+        return _construireExplorer();
+      case 1:
+        return const Center(
+          child: Text('Favoris', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        );
+      case 2:
+        return const MesReservationsScreen(); // Onglet Voyages
+      default:
+        return _construireExplorer();
+    }
+  }
+
+  Widget _construireExplorer() {
+    return SafeArea(
+      child: FutureBuilder<List<Destination>>(
+        future: _futurDestinations,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return ErreurReseau(
+              message: 'Impossible de charger les destinations.',
+              onReessayer: _recharger,
+            );
+          }
+          final destinations = snapshot.data!;
+          final filtrees = _filtrer(destinations);
+
+          return RefreshIndicator(
+            onRefresh: _recharger,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(20),
+              children: [
+                const HomeHeader(prenom:'rihla'),
+                const SizedBox(height: 20),
+                const SearchBox(),
+                const SizedBox(height: 24),
+                if (destinations.isNotEmpty)
+                  HeroBanner(destination: destinations.first),
+                const SizedBox(height: 24),
+                const SectionTitle(titre: 'Categaries'),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (final c in categories)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(c),
+                            selected: _categorie == c, 
+                            onSelected: (_) {
+                              setState(() {
+                                _categorie = c; // mémoriser la catégorie choisie
+                              });
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const SizedBox(height: 24),
+                const SectionTitle(
+                  titre:'populairés',
+                  action:'voir tout',
+                ),
+                const SizedBox(height: 12,),
+                for(final d in filtrees)
+                  DestinationCard(destination: d)
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: FutureBuilder<List<Destination>>(
-          future: _futurDestinations,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return ErreurReseau(
-                message: 'Impossible de charger les destinations.',
-                onReessayer: _recharger,
-              );
-            }
-            final destinations = snapshot.data!;
-            final filtrees = _filtrer(destinations);
-
-            // Correction : on retourne le RefreshIndicator qui contient la ListView
-            return RefreshIndicator(
-              onRefresh: _recharger,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
-                children: [
-                  const HomeHeader(prenom:'rihla'),
-                  const SizedBox(height: 20),
-                  const SearchBox(),
-                  const SizedBox(height: 24),
-                  if (destinations.isNotEmpty)
-                    HeroBanner(destination: destinations.first),
-                  const SizedBox(height: 24),
-                  const SectionTitle(titre: 'Categaries'),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (final c in categories)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: ChoiceChip(
-                              label: Text(c),
-                              selected: _categorie == c, 
-                              onSelected: (_) {
-                                setState(() {
-                                  _categorie = c; // mémoriser la catégorie choisie
-                                });
-                              },
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const SizedBox(height: 24),
-                  const SectionTitle(
-                    titre:'populairés',
-                    action:'voir tout',
-                  ),
-                  const SizedBox(height: 12,),
-                  for(final d in filtrees)
-                    DestinationCard(destination: d)
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+      body: _afficherOnglet(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _onglet,
         onTap: (index) {
@@ -122,16 +142,16 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Accueil',
+            icon: Icon(Icons.explore),
+            label: 'Explorer',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Favoris',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+            icon: Icon(Icons.luggage_outlined),
+            label: 'Voyages',
           ),
         ],
       ),
@@ -139,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Widget d'erreur réutilisable exigé par le TP
+// Widget d'erreur réutilisable
 class ErreurReseau extends StatelessWidget {
   final String message;
   final VoidCallback onReessayer;

@@ -25,7 +25,8 @@ class Reservation {
     required this.formule,
     required this.total,
   });
-   Map<String, dynamic> toJson() {
+
+  Map<String, dynamic> toJson() {
     return {
       'destinationId': destination.id,   // l'id suffit
       'nom': nom,
@@ -35,13 +36,22 @@ class Reservation {
       'voyageurs': voyageurs,
       'formule': formule,
       'total': total,
-      // TODO 1 : email, telephone, voyageurs, formule, total
       'id': id,
-      // TODO 2 : dateDepart -> texte avec toIso8601String()
     };
   }
+
+
+  factory Reservation.fromJson(Map<String, dynamic> json) {
+    return Reservation(
+      id: json['id']?.toString(),
+      destination: Destination.fromJson(json['destination'] as Map<String, dynamic>),
+      nom: json['nom'] as String,
+      email: json['email'] as String,
+      telephone: json['telephone'] as String,
+      dateDepart: DateTime.parse(json['dateDepart'] as String),
+      voyageurs: (json['voyageurs'] as num).toInt(),
+      formule: json['formule'] as String,
+      total: (json['total'] as num).toInt(),
+    );
+  }
 }
-
-
-
-  
