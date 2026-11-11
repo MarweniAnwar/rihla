@@ -40,18 +40,32 @@ class Reservation {
     };
   }
 
-
   factory Reservation.fromJson(Map<String, dynamic> json) {
     return Reservation(
       id: json['id']?.toString(),
-      destination: Destination.fromJson(json['destination'] as Map<String, dynamic>),
-      nom: json['nom'] as String,
-      email: json['email'] as String,
-      telephone: json['telephone'] as String,
-      dateDepart: DateTime.parse(json['dateDepart'] as String),
-      voyageurs: (json['voyageurs'] as num).toInt(),
-      formule: json['formule'] as String,
-      total: (json['total'] as num).toInt(),
+      // Sécurisation : si 'destination' est null, on évite le plantage
+      destination: json['destination'] != null
+          ? Destination.fromJson(json['destination'] as Map<String, dynamic>)
+          : Destination(
+              id: json['destinationId']?.toString() ?? '',
+              nom: 'Destination inconnue',
+              region: '',
+              categorie: '',
+              image: 'assets/images/sidi_bou_said.png',
+              note: 0.0,
+              prix: 0,
+              duree: '',
+              description: '',
+            ),
+      nom: json['nom'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      telephone: json['telephone'] as String? ?? '',
+      dateDepart: json['dateDepart'] != null
+          ? DateTime.parse(json['dateDepart'] as String)
+          : DateTime.now(),
+      voyageurs: (json['voyageurs'] as num?)?.toInt() ?? 1,
+      formule: json['formule'] as String? ?? '',
+      total: (json['total'] as num?)?.toInt() ?? 0,
     );
   }
 }

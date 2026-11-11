@@ -39,7 +39,7 @@ class ApiService {
     return creee['id'].toString();
   }
 
-  // --- Méthode pour le Palier 5 ---
+
   static Future<List<Reservation>> getReservations() async {
     final reponse = await http
         .get(_url('/reservations?_embed=destination'))
@@ -51,5 +51,14 @@ class ApiService {
 
     final List<dynamic> liste = jsonDecode(utf8.decode(reponse.bodyBytes));
     return liste.map((e) => Reservation.fromJson(e as Map<String, dynamic>)).toList();
+  }
+   static Future<void> supprimerReservation(String id) async {
+    final reponse = await http
+        .delete(_url('/reservations/$id'))
+        .timeout(ApiConfig.timeout);
+
+    if (reponse.statusCode != 200) {
+      throw Exception('Erreur ${reponse.statusCode} lors de la suppression de la réservation');
+    }
   }
 }
