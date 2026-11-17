@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.luggage_outlined),
-            label: 'Voyages',
+            label: 'Mes Voyages',
           ),
         ],
       ),
