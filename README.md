@@ -66,3 +66,6 @@ POST : sert à envoyer des données au serveur pour créer une nouvelle ressourc
 1.destinationId : Pour éviter la redondance, la destination existant déjà sur le serveur.
 2.Content-Type manquant : Le serveur rejette la requête ou renvoie une erreur car il ne sait pas interpréter le format JSON.
 3.Test mounted : Pour éviter un crash si l'utilisateur a quitté l'écran pendant l'attente de la réponse réseau.
+## tp6
+## palier 1
+Q1/Si je casse l’application sur feature/favoris, main n’est pas affectée, car la branche isole mes modifications. main reste stable et livrable tant que je n’ai pas fusionné la branche par une Pull Request.
