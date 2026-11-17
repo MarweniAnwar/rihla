@@ -69,3 +69,13 @@ POST : sert à envoyer des données au serveur pour créer une nouvelle ressourc
 ## tp6
 ## palier 1
 Q1/Si je casse l’application sur feature/favoris, main n’est pas affectée, car la branche isole mes modifications. main reste stable et livrable tant que je n’ai pas fusionné la branche par une Pull Request.
+## palier 2
+Q1/Un StatelessWidget ne possède aucun état : il ne mémorise rien lui-même. L’état (la liste des favoris) vit dans FavorisModel, en dehors du widget.
+
+Quand l’utilisateur appuie sur le cœur, context.read<FavorisModel>().basculer(...) modifie le modèle, qui appelle notifyListeners(). Grâce à context.watch, le bouton est reconstruit avec la nouvelle valeur. C’est une reconstruction commandée par le modèle, pas un changement d’état interne. Un StatefulWidget n’est nécessaire que si le widget garde lui-même une donnée qui change (avec setState).
+
+Q2/À chaque rechargement depuis json-server (rafraîchissement ou « Réessayer »), Destination.fromJson crée de nouveaux objets. Un Set<Destination> compare les objets par identité : l’ancienne destination favorite et la nouvelle, même si elles ont les mêmes données, seraient considérées comme différentes. Le cœur redeviendrait vide et on pourrait avoir des doublons.
+
+L’id est stable et ne change pas au rechargement. Avec Map<String, Destination>, estFavori retrouve toujours la bonne destination, et ça marche aussi après un rafraîchissement, ce que le test 4 de 2.6 vérifie.
+Q3/
+Les favoris sont stockés en mémoire vive (RAM), dans la Map de FavorisModel. Un hot restart relance l’application et recrée un nouveau FavorisModel() vide : la mémoire est réinitialisée. Rien n’est enregistré sur le disque. Pour les conserver après la fermeture de l’app, il faudra de la persistance, avec shared_preferences à la séance suivante.
