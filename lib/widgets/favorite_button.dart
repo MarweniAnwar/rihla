@@ -1,37 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/destination.dart';
+import '../providers/favoris_model.dart';
 
-class FavoriteButton extends StatefulWidget {
-  const FavoriteButton({super.key});
+class FavoriteButton extends StatelessWidget {
+  final Destination destination;
+  const FavoriteButton({super.key, required this.destination});
 
-  @override
-  State<FavoriteButton> createState() => _FavoriteButtonState();
-}
-class _FavoriteButtonState extends State<FavoriteButton> {
-  bool _favori = false;
-  // TODO 1 : un booléen privé _favori, faux au départ
- 
-  void _basculer() {
-    setState(() {
-      _favori = !_favori;
-    });
-    // TODO 2 : inverser _favori avec setState
- 
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text(_favori ? 'Ajouté aux favoris' : 'Retiré des favoris'),
-        duration: const Duration(seconds: 1),
-      ));
-  }
- 
   @override
   Widget build(BuildContext context) {
+    // watch : écoute le modèle, le widget est reconstruit à chaque changement
+    final favori = context.watch<FavorisModel>().estFavori(destination);
+
     return IconButton(
-      icon: Icon(_favori ? Icons.favorite : Icons.favorite_border),
+      icon: Icon(favori ? Icons.favorite : Icons.favorite_border),
       color: Colors.red,
-      onPressed: _basculer,
+      onPressed: () {
+        // read : agit sur le modèle, sans écouter
+        final ajoute = context.read<FavorisModel>().basculer(destination);
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(
+            content: Text(ajoute ? 'Ajouté aux favoris' : 'Retiré des favoris'),
+            duration: const Duration(seconds: 1),
+          ));
+      },
     );
-    // TODO 3 : IconButton qui appelle _basculer ;
-    //          icône favorite (rouge) ou favorite_border selon _favori
   }
 }

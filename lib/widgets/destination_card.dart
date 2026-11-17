@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rihla/screens/detail_screen.dart';
+import '../screens/detail_screen.dart';
 import '../models/destination.dart';
 import 'favorite_button.dart';
 
@@ -25,7 +25,6 @@ class DestinationCard extends StatelessWidget {
               builder: (context) => DetailScreen(destination: destination),
             ),
           );
-          //TODO 1 : Navigator.push vers DetailScreen,
         },
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -84,7 +83,7 @@ class DestinationCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.star,
                           size: 16,
                           color: Colors.amber,
@@ -102,7 +101,8 @@ class DestinationCard extends StatelessWidget {
                               ),
                         ),
                         const SizedBox(width: 8),
-                        const FavoriteButton(),
+                        // CORRIGÉ : plus de const, la destination est une variable
+                        FavoriteButton(destination: destination),
                       ],
                     ),
                   ],

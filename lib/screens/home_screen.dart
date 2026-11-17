@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // AJOUT
 import 'package:rihla/models/destination.dart';
 import '../data/destinations.dart'; 
+import '../providers/favoris_model.dart'; // AJOUT
 import '../widgets/home_header.dart';
 import '../widgets/search_box.dart';
 import '../widgets/hero_banner.dart'; 
 import '../widgets/section_title.dart';
 import '../widgets/destination_card.dart'; 
 import '../services/api_service.dart';
-import 'mes_reservations_screen.dart'; // Import de l'onglet Voyages
+import 'mes_reservations_screen.dart'; 
+import 'favoris_screen.dart'; 
+// Import de l'onglet Voyages
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,9 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return _construireExplorer();
       case 1:
-        return const Center(
-          child: Text('Favoris', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        );
+        // MODIFIÉ : l'onglet Favoris affiche FavorisScreen
+        return const SafeArea(child: FavorisScreen());
       case 2:
         return const MesReservationsScreen(); // Onglet Voyages
       default:
@@ -131,6 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // AJOUT : nombre de favoris, lu avec watch pour que le badge se mette à jour
+    final nombre = context.watch<FavorisModel>().nombre;
+
     return Scaffold(
       body: _afficherOnglet(),
       bottomNavigationBar: BottomNavigationBar(
@@ -140,16 +146,22 @@ class _HomeScreenState extends State<HomeScreen> {
             _onglet = index; // mémoriser l'onglet choisi
           });
         },
-        items: const [
-          BottomNavigationBarItem(
+        // MODIFIÉ : "const" retiré, car le badge dépend de la variable "nombre"
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.explore),
             label: 'Explorer',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            // MODIFIÉ : badge avec le nombre de favoris
+            icon: Badge(
+              isLabelVisible: nombre > 0,
+              label: Text('$nombre'),
+              child: const Icon(Icons.favorite),
+            ),
             label: 'Favoris',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.luggage_outlined),
             label: 'Voyages',
           ),
@@ -195,3 +207,4 @@ class ErreurReseau extends StatelessWidget {
     );
   }
 }
+//un commit par ia
