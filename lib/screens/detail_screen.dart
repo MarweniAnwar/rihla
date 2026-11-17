@@ -5,10 +5,9 @@ import 'reservation_screen.dart';
 import '../models/reservation.dart';
 import '../models/avis.dart';
 import 'avis_screen.dart';
-import '../services/api_service.dart'; // Ajout de l'import du service API
+import '../services/api_service.dart';
 
-/// Devoir TP3 — Écran de détail d'une destination (version du kit TP4).
-/// À relier aux cartes au palier 2 du TP4.
+/// Écran de détail d'une destination.
 class DetailScreen extends StatefulWidget {
   final Destination destination;
 
@@ -21,17 +20,18 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   int _voyageurs = 1;
 
-  // Liste initiale d'avis pour le Checkpoint 1
   final List<Avis> _avisList = [
     const Avis(
       auteur: 'Sarra',
       note: 5,
-      commentaire: 'Séjour magnifique, la plage de Sidi Mahrez est superbe. Je recommande la formule Confort !',
+      commentaire:
+          'Séjour magnifique, la plage de Sidi Mahrez est superbe. Je recommande la formule Confort !',
     ),
     const Avis(
       auteur: 'Karim',
       note: 4,
-      commentaire: 'Très bonne organisation, guide sympathique. Un peu de monde en août.',
+      commentaire:
+          'Très bonne organisation, guide sympathique. Un peu de monde en août.',
     ),
   ];
 
@@ -137,10 +137,11 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                 ),
-                const Positioned(
+                // CORRIGÉ : plus de const, et on passe la destination `d`
+                Positioned(
                   top: 48,
                   right: 16,
-                  child: _BoutonRond(child: FavoriteButton()),
+                  child: _BoutonRond(child: FavoriteButton(destination: d)),
                 ),
               ],
             ),
@@ -254,7 +255,6 @@ class _DetailScreenState extends State<DetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                // --- SECTION AVIS (Checkpoint 1) ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -293,8 +293,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor:
-                                            cs.primaryContainer,
+                                        backgroundColor: cs.primaryContainer,
                                         child: Text(
                                           avis.auteur[0].toUpperCase(),
                                           style: TextStyle(
@@ -418,7 +417,8 @@ class _InfoTile extends StatelessWidget {
         children: [
           Icon(icone, color: cs.primary),
           const SizedBox(height: 6),
-          Text(label, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+          Text(label,
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
           Text(valeur, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
