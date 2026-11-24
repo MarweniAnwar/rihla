@@ -81,52 +81,84 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           final destinations = snapshot.data!;
           final filtrees = _filtrer(destinations);
+          final colorScheme = Theme.of(context).colorScheme;
 
-          return RefreshIndicator(
-            onRefresh: _recharger,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20),
-              children: [
-                const HomeHeader(prenom:'rihla'),
-                const SizedBox(height: 20),
-                const SearchBox(),
-                const SizedBox(height: 24),
-                if (destinations.isNotEmpty)
-                  HeroBanner(destination: destinations.first),
-                const SizedBox(height: 24),
-                const SectionTitle(titre: 'Categaries'),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+          return Column(
+            children: [
+              if (ApiService.depuisCache)
+                Container(
+                  width: double.infinity,
+                  color: colorScheme.secondaryContainer,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Row(
                     children: [
-                      for (final c in categories)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            label: Text(c),
-                            selected: _categorie == c, 
-                            onSelected: (_) {
-                              setState(() {
-                                _categorie = c; // mémoriser la catégorie choisie
-                              });
-                            },
+                      Icon(
+                        Icons.wifi_off,
+                        size: 18,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Hors connexion : données enregistrées',
+                          style: TextStyle(
+                            color: colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                const SizedBox(height: 24),
-                const SectionTitle(
-                  titre:'populairés',
-                  action:'voir tout',
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _recharger,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(20),
+                    children: [
+                      const HomeHeader(prenom:'rihla'),
+                      const SizedBox(height: 20),
+                      const SearchBox(),
+                      const SizedBox(height: 24),
+                      if (destinations.isNotEmpty)
+                        HeroBanner(destination: destinations.first),
+                      const SizedBox(height: 24),
+                      const SectionTitle(titre: 'Categaries'),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (final c in categories)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: ChoiceChip(
+                                  label: Text(c),
+                                  selected: _categorie == c, 
+                                  onSelected: (_) {
+                                    setState(() {
+                                      _categorie = c; // mémoriser la catégorie choisie
+                                    });
+                                  },
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const SizedBox(height: 24),
+                      const SectionTitle(
+                        titre:'populairés',
+                        action:'voir tout',
+                      ),
+                      const SizedBox(height: 12,),
+                      for(final d in filtrees)
+                        DestinationCard(destination: d)
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 12,),
-                for(final d in filtrees)
-                  DestinationCard(destination: d)
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),
