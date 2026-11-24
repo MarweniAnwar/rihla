@@ -79,3 +79,17 @@ Q2/À chaque rechargement depuis json-server (rafraîchissement ou « Réessayer
 L’id est stable et ne change pas au rechargement. Avec Map<String, Destination>, estFavori retrouve toujours la bonne destination, et ça marche aussi après un rafraîchissement, ce que le test 4 de 2.6 vérifie.
 Q3/
 Les favoris sont stockés en mémoire vive (RAM), dans la Map de FavorisModel. Un hot restart relance l’application et recrée un nouveau FavorisModel() vide : la mémoire est réinitialisée. Rien n’est enregistré sur le disque. Pour les conserver après la fermeture de l’app, il faudra de la persistance, avec shared_preferences à la séance suivante.
+## tp 7
+## palier 1:
+Q1/
+SharedPreferences (et le localStorage sur le Web) ne sait enregistrer que des types simples et primitifs (int, double, bool, String, List<String>), et pas des instances de classes Dart personnalisées comme Destination.
+
+Sérialiser chaque Destination en Map (toJson()) puis en chaîne String JSON (jsonEncode(...)) permet de stocker toute la liste dans setStringList(_cle, textes), puis de la reconstruire fidèlement au chargement via jsonDecode(...) et Destination.fromJson(...).
+Q2/
+FavorisModel()..charger() utilise l'opérateur cascade (..) de Dart : il crée l'instance FavorisModel, appelle charger() dessus, et renvoie l'instance FavorisModel (et non le Future<void> retourné par charger()). C'est donc bien un FavorisModel qui est fourni à ChangeNotifierProvider.
+
+Avec FavorisModel().charger() (sans ..), l'expression évalue et renvoie le résultat de charger(), c'est-à-dire un Future<void> au lieu d'un FavorisModel : cela provoque une erreur de type à la compilation (Future<void> n'est pas assignable à FavorisModel), et l'application ne démarre pas.
+Q3/
+charger() est async : la lecture dans SharedPreferences prend un petit temps et se termine après le premier rendu de l'interface (build).
+
+Sans notifyListeners() à la fin de charger(), _favoris est bien rempli en mémoire, mais les widgets qui écoutent FavorisModel (Consumer / context.watch) ne sont pas avertis qu'il faut se redessiner : l'écran peut donc rester affiché comme vide ou avec l'ancien état sans lever d'erreur visible.
