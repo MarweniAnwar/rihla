@@ -3,6 +3,7 @@ import 'package:provider/provider.dart'; // AJOUT
 import 'package:rihla/models/destination.dart';
 import '../data/destinations.dart'; 
 import '../providers/favoris_model.dart'; // AJOUT
+import '../providers/reglages_model.dart'; // AJOUT TP7 Partie 2
 import '../widgets/home_header.dart';
 import '../widgets/search_box.dart';
 import '../widgets/hero_banner.dart'; 
@@ -138,6 +139,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final nombre = context.watch<FavorisModel>().nombre;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rihla'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              context.watch<ReglagesModel>().sombre
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onPressed: () => context.read<ReglagesModel>().basculerTheme(),
+          ),
+        ],
+      ),
       body: _afficherOnglet(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _onglet,
